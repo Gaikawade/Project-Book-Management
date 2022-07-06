@@ -1,9 +1,7 @@
-const { default: mongoose } = require('mongoose')
-const ObjectId = mongoose.Schema.Types.ObjectId
-
+const mongoose = require('mongoose');
+const ObjectId = mongoose.Schema.Types.ObjectId;
 
 const bookSchema = mongoose.Schema({
-
     title: {
         type: String,
         required: true,
@@ -36,7 +34,8 @@ const bookSchema = mongoose.Schema({
         default: 0
     },
     deletedAt: {
-        type: Date
+        type: Date,
+        default: null
     },
     isDeleted: {
         type: Boolean,
@@ -46,6 +45,6 @@ const bookSchema = mongoose.Schema({
         type: Date,
         required: true
     },
-}, { timestapms: true })
+}, {timestamps : true});
 
-module.exports =mongoose.model("Book",bookSchema)
+module.exports = mongoose.model("Book",bookSchema);

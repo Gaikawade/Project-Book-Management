@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
+const moment = require("moment");
 const bookModel = require("../models/bookModel");
 const userModel = require("../models/userModel");
+const reviewModel = require("../models/reviewModel");
 
 const createBook = async function (req, res) {
     try {
@@ -10,7 +12,7 @@ const createBook = async function (req, res) {
             return res.status(400).send({status: false, message: "please enter require data to create Book"});
         }
 
-        const { title, excerpt, userId, ISBN, category, subcategory } = data;
+        const { title, excerpt, userId, ISBN, category, subcategory, releasedAt } = data;
 
         if (!title) {
             return res.status(400).send({ status: false, message: "please enter Book title" });
@@ -28,7 +30,7 @@ const createBook = async function (req, res) {
             return res.status(400).send({ status: false, message: "please enter Book category" });
         }
         if (!subcategory) {
-            return res.status(400).send({ status: false, message: "please ented subcategory" });
+            return res.status(400).send({ status: false, message: "please enter subcategory" });
         }
 
         if (!/^[a-zA-Z\s]+$/.test(title)) {
@@ -40,7 +42,7 @@ const createBook = async function (req, res) {
         if (!mongoose.isValidObjectId(userId)) {
             return res.status(400).send({ status: false, message: " invalid objectId" });
         }
-        if(!/^\d{13}$/.test(ISBN)){
+        if(!/^\+?([978])?[-]?[0-9]{10}$/.test(ISBN)){
             return res.status(400).send({ status: false, message: "Please Enter a valid ISBN number" });
         }
         if (!/^[a-zA-Z\s]+$/.test(category)) {
@@ -58,6 +60,14 @@ const createBook = async function (req, res) {
         if(getISBN){
             return res.status(400).send({status: false, message: "ISBN is already exists in our Data"})
         }
+        let getUserId = await userModel.findById({_id: userId});
+        if(!getUserId){
+            return res.status(400).send({status: false, message: "No user exists with the id exists"});
+        }
+
+        let date = Date.now();
+        let dateFormat = moment(date).format('YYYY-MM-DD, hh:mm:ss')        //formatting date
+        data['releasedAt'] = dateFormat;
 
         let savedData = await bookModel.create(data);
         return res.status(201).send({ status: true, message: "success", data: savedData });
@@ -91,13 +101,15 @@ const getBooks = async (req, res) => {
             }
         }
         if(subcategory){
-            let findBySubcategory = await userModel.findOne({subcategory:subcategory});
+            let findBySubcategory = await userModel.findOne({subcategory:{$in: [subcategory]}});
             if(!findBySubcategory){
                 res.status(404).send({status: false, message: "No books with this Subcategory exist"});
             }
         }
 
-        let books = await bookModel.find(filter).select({_id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1}).sort({title: -1});
+        let books = await bookModel.find(filter)
+                                   .select({_id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1})
+                                   .sort({title: -1});
         if(books.length == 0){
             return res.status(404).send({status: false, message: "No books found with the given query"});
         }
@@ -120,17 +132,28 @@ const getBookById = async (req, res) => {
             res.status(400).send({status: false, message: 'Invalid book id'});
         }
 
-        let findBook = await bookModel.findById(id);
-        if(!findBook){
+        let bookData = await bookModel.findById(id).select({ISBN: 0, deletedAt: 0, _v: 0});
+        if(!bookData){
             res.status(404).send({status: false, message: 'No Book exists with that id'});
         }
-        if(findBook.isDeleted == true){
-            res.status(404).send({status: false, message: 'Book has been deleted'});
-        }
-        res.send({findBook});
+        
+        let reviews = await reviewModel.find({bookId: id})
+        let temp = JSON.stringify(bookData);
+        let result = JSON.parse(temp);
+        result.reviewsData = reviews;
+
+        res.send({status: true, message: 'Book list', data: result});
     }catch (err) {
         res.status(500).send({ status: false, message: err.message });
     }
 }
 
 module.exports = { createBook, getBooks, getBookById};
+
+
+
+
+
+// if(findBook.isDeleted == true){
+        //     res.status(404).send({status: false, message: 'Book has been deleted'});
+        // }

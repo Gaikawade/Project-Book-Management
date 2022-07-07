@@ -12,7 +12,7 @@ const createBook = async function (req, res) {
             return res.status(400).send({status: false, message: "please enter require data to create Book"});
         }
 
-        const { title, excerpt, userId, ISBN, category, subcategory } = data;
+        let { title, excerpt, userId, ISBN, category, subcategory } = data;
 
         if (!title) {
             return res.status(400).send({ status: false, message: "please enter Book title" });
@@ -35,7 +35,7 @@ const createBook = async function (req, res) {
             return res.status(400).send({ status: false, message: "please enter subcategory" });
         }
 
-        if (!/^[a-zA-Z\s]+$/.test(title)) {
+        if (!/^[a-zA-Z0-9\s]+$/.test(title)) {
             return res.status(400).send({status: false, message: "Please Enter Only Alphabets in title"});
         }
         if (!/^[a-zA-Z\s]+$/.test(excerpt)) {
@@ -50,9 +50,9 @@ const createBook = async function (req, res) {
         if (!/^[a-zA-Z\s]+$/.test(category)) {
             return res.status(400).send({status: false, message: "Please Enter Only Alphabets in tittle"});
         }
-        if (!/^[a-zA-Z\s]+$/.test(subcategory)) {
-            return res.status(400).send({status: false, message: "Please Enter Only Alphabets in subcategory",});
-        }
+        // if (!/^[a-zA-Z\s]+$/.test(subcategory)) {
+        //     return res.status(400).send({status: false, message: "Please Enter Only Alphabets in subcategory",});
+        // }
 
         let getTitle = await bookModel.findOne({title});
         if(getTitle){
@@ -161,7 +161,7 @@ const updateBook = async (req, res) => {
         }
 
         let bookData = await bookModel.findById(id).select({ISBN: 0, deletedAt: 0, __v: 0});
-        if(bookData.userId !== req.userId){
+        if(bookData.userId.toString() !== req.userId){
             return res.status(403).send({status: false, message: 'Unauthorized access'});
         }
         if(!bookData){
@@ -203,7 +203,7 @@ const updateBook = async (req, res) => {
             }
         }
 
-        const updateBook = await bookModel.findOneAndUpdate(
+        let updateBook = await bookModel.findOneAndUpdate(
             {_id: id},
             {$set: {...fieldsToUpdate}},
             {new: true});
@@ -220,7 +220,7 @@ const deleteById = async function (req,res){
     try{
             let bookId = req.params.bookId;
             let bookData = await bookModel.findOne({_id: bookId});
-            if(bookData.userId !== req.userId){
+            if(bookData.userId.toString() !== req.userId){
                 return res.status(403).send({status: false, message: 'Unauthorized access'});
             }
             if(!bookData){

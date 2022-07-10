@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const authenticate = async (req, res, next) => {
     try {
         const token = req.headers['x-api-key'];
-        // if(!token) token = req.headers['X-API-KEY'];
+        if(!token) token = req.headers['X-API-KEY'];
         if(!token){
             return res.status(400).send({status: false, message: "token must be present in headers"});
         }

@@ -14,16 +14,14 @@ const createUser = async function(req,res){
         if(!phone)       return res.status(400).send({status: false, message: "Phone number is required"});
         if(!email)       return res.status(400).send({status: false, message: "Email is required"});
         if(!password)    return res.status(400).send({status: false, message: "Password is required"});
-        if(!address)     return res.status(400).send({status: false, message: "Address is required"});
-        
 
         if(!isValidTitle(title))        return res.status(400).send({status: false, message: "Title should be Mr/ Mrs/ Miss",});
         if(!isValidName(name))          return res.status(400).send({status: false, message: "Please enter Name in valid format"});
         if(!isValidMobile(phone))       return res.status(400).send({status: false,message: "Please enter Valid Phone Number"});
         if(!isValidEmail(email))        return res.status(400).send({status: false,message: "Please enter Valid Email Id"});
         if(!isValidPassword(password))  return res.status(400).send({status: false,message: "Password Should be 8-15 characters which contains at least one numeric digit, one uppercase and one special character"});
-        if(!/^\d{6}$/.test(address.pincode)){
-            return res.status(400).send({status: false, message: "Please enter a valid pincode"})
+        if(address){
+            if(!/^\d{6}$/.test(address.pincode))    return res.status(400).send({status: false, message: "Please enter a valid pincode"})
         }
 
         let phoneCheck = await userModel.findOne({ phone });

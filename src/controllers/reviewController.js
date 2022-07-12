@@ -32,7 +32,7 @@ const createReview = async (req, res) => {
             if(!isValidFormat(data.review)) return res.status(400).send({status: false, message: "Invalid review format"});
         }
 
-        if(!(rating >=0 && rating <=5)) return res.status(400).send({status: false, message: "Rating should be between 0 and 5"});
+        if(!(rating >=1 && rating <=5)) return res.status(400).send({status: false, message: "Rating should be between 1 and 5"});
         data['rating'] = rating.toFixed(0);     //storing only one decimal value
 
         let createReview = await reviewModel.create(data);

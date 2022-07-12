@@ -19,9 +19,7 @@ const reviewModel =  new mongoose.Schema({
         required : true
     },
     rating: {
-        type :Number, 
-        min : 1, 
-        max : 5,
+        type :Number,
         required : true
     },
     review: {

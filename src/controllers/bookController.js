@@ -1,4 +1,4 @@
-const moment = require("moment");
+// const moment = require("moment");
 const { isValidObjectId } = require("mongoose");
 const bookModel = require("../models/bookModel");
 const userModel = require("../models/userModel");
@@ -26,10 +26,16 @@ const createBook = async function (req, res) {
         if (!isValidObjectId(userId))  return res.status(400).send({ status: false, message: " invalid objectId" });
         if(!isbnRegex(ISBN))           return res.status(400).send({ status: false, message: "Please Enter a valid ISBN number" });
         if (!isValidName(category))    return res.status(400).send({status: false, message: "Please enter category in proper format" });
-        if (!isValidName(subcategory)) return res.status(400).send({status: false, message: "Please enter subcategory in proper format",});
+
+        if(subcategory){
+            for(let i in subcategory){
+                if (!isValidName(subcategory[i])) return res.status(400).send({status: false, message: "Please enter subcategory in proper format",});
+            }
+        }
         if(reviews){
             if(reviews != 0) return res.status(400).send({status: false, message: "Reviews should be set to 0 while creating a book"});
         }
+    
         if(!isValidDate(releasedAt)) return res.status(400).send({status: false, message:"Enter date in YYYY-MM-DD format"});
 
         // data['title'] = space(title);

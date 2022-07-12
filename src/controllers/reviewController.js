@@ -1,7 +1,7 @@
 const { isValidObjectId } = require('mongoose');
 const reviewModel = require("../models/reviewModel");
 const bookModel = require("../models/bookModel");
-const {isValidBody, isValidDate, isValidName} = require('../validator/validate');
+const {isValidBody, isValidDate, isValidName, isValidFormat} = require('../validator/validate');
 
 const createReview = async (req, res) => {
     try{
@@ -10,9 +10,9 @@ const createReview = async (req, res) => {
         let {bookId, reviewedBy, reviewedAt, rating} = data;
 
         if(!req.params.bookId) return res.status(400).send({status: false, message: "Please enter a book ID"});
-        if(ID != bookId) return res.status(400).send({status: false, message: "Book ID is not same"});
-
         if(!isValidBody(data)) return res.status(400).send({status: false, message: 'Data is required in order to give review'});
+
+        if(ID != bookId) return res.status(400).send({status: false, message: "Book ID is not same"});
 
         if(!bookId) return res.status(400).send({status: false, message: "Book ID is required"});
         if(!rating) return res.status(400).send({status: false, message: "Rating is required"});
@@ -23,21 +23,22 @@ const createReview = async (req, res) => {
         if(findBook['isDeleted'] == true) return res.status(400).send({status: false, message: "Book has been deleted"});
 
         if(reviewedBy){
-            if(!isValidName(reviewedBy)) return res.status(400).send({status: false, message: "Invalid Reviewer name is required"});
+            if(!isValidName(reviewedBy)) return res.status(400).send({status: false, message: "Invalid Reviewer name"});
         }
         if(reviewedAt){
             if(!isValidDate(reviewedAt)) return res.status(200).send({status: false, message: "Enter date in YYYY-MM-DD format"});
-        }//else{
-            
-        // }
+        }
+        if(data.review){
+            if(!isValidFormat(data.review)) return res.status(400).send({status: false, message: "Invalid review format"});
+        }
 
         if(!(rating >=0 && rating <=5)) return res.status(400).send({status: false, message: "Rating should be between 0 and 5"});
-        data['rating'] = rating.toFixed(1);     //storing only one decimal value
+        data['rating'] = rating.toFixed(0);     //storing only one decimal value
 
         let createReview = await reviewModel.create(data);
-        let result = findBook.toObject();
+        let update = await bookModel.findOneAndUpdate({_id: bookId},{$inc: {reviews: +1}}, {new: true})
+        let result = update.toObject();
         result.reviewsData = [createReview];
-        await bookModel.findOneAndUpdate({_id: bookId},{$inc: {reviews: +1}}, {new: true})
         res.status(200).send({status: true, data: result});
 
     }catch(err){

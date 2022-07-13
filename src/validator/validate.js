@@ -30,11 +30,11 @@ let isbnRegex = (ISBN) => {
 };
 
 const isValidFormat = (value) => {
-    return (/^[A-Z]+([-'_\sa-zA-Z0-9])+$/.test(value));
+    return (/^[A-Za-z]+([-'_\s,a-zA-Z0-9])+$/.test(value));
 }
 
 const isValidDate = (date) => {
-    return (/^(18|20)\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/.test(date));
+    return (/^(18|19|20)\d{2}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/.test(date));
 }
 
 module.exports = {

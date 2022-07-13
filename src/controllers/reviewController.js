@@ -10,9 +10,12 @@ const createReview = async (req, res) => {
         let {bookId, reviewedBy, reviewedAt, rating} = data;
 
         if(!req.params.bookId) return res.status(400).send({status: false, message: "Please enter a book ID"});
+        if(!isValidObjectId(ID)) return res.status(400).send({status: false, message: 'Invalid book id'});
         if(!isValidBody(data)) return res.status(400).send({status: false, message: 'Data is required in order to give review'});
 
-        if(ID != bookId) return res.status(400).send({status: false, message: "Book ID is not same"});
+        if(bookId){
+            if(ID != bookId) return res.status(400).send({status: false, message: "Book ID is not same"});
+        }
 
         if(!bookId) return res.status(400).send({status: false, message: "Book ID is required"});
         if(!rating) return res.status(400).send({status: false, message: "Rating is required"});
@@ -37,9 +40,10 @@ const createReview = async (req, res) => {
 
         let createReview = await reviewModel.create(data);
         let update = await bookModel.findOneAndUpdate({_id: bookId},{$inc: {reviews: +1}}, {new: true})
+                                    .select({_id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, reviews: 1});
         let result = update.toObject();
         result.reviewsData = [createReview];
-        res.status(200).send({status: true, data: result});
+        res.status(201).send({status: true, message: "Review Created successfully", data: result});
 
     }catch(err){
         res.status(500).send({ status: false, message: err.message });
@@ -51,6 +55,9 @@ const updateReview = async (req, res) => {
         let bookId = req.params.bookId;
         let reviewId = req.params.reviewId;
         let data = req.body;
+
+        if(!isValidObjectId(bookId)) return res.status(400).send({status: false, message: 'Invalid book id'});
+        if(!isValidObjectId(reviewId)) return res.status(400).send({status: false, message: 'Invalid review id'});
 
         let book = await bookModel.findById(bookId);
         if(book){
@@ -76,6 +83,9 @@ const deleteReview = async (req, res) => {
     try{
         let bookId = req.params.bookId;
         let reviewId = req.params.reviewId;
+
+        if(!isValidObjectId(bookId)) return res.status(400).send({status: false, message: 'Invalid book id'});
+        if(!isValidObjectId(reviewId)) return res.status(400).send({status: false, message: 'Invalid review id'});
 
         let book = await bookModel.findById(bookId);
         if(book){

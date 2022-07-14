@@ -317,3 +317,6 @@ Refer below sample
   }
 }
 ```
+
+```Add bookCover(string) key in your bookModel in Book management project. When book is being created, take up the book cover as an image, upload it to S3 and save the URL in bookCover key.
+```

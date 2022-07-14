@@ -3,7 +3,8 @@ const router = express.Router();
 const {authenticate} = require("../middleware/auth");
 const {createUser, loginUser} = require("../controllers/userController");
 const {createBook, getBooks, getBookById, updateBook, deleteById} = require("../controllers/bookController");
-const {createReview, updateReview, deleteReview} = require("../controllers/reviewController");('../controllers/reviewController');
+const {createReview, updateReview, deleteReview} = require("../controllers/reviewController");
+const {createAws} = require('../controllers/awsController');
 
 
 //User APIs
@@ -21,5 +22,13 @@ router.delete('/books/:bookId', authenticate, deleteById);  //deleteBookById
 router.post('/books/:bookId/review', createReview);             //createReview
 router.put('/books/:bookId/review/:reviewId', updateReview);    //updateReview
 router.delete('/books/:bookId/review/:reviewId', deleteReview); //deleteReview
+
+//AWS File Upload
+router.post('/write-file-aws', createAws)
+
+//For wrong URL's
+router.all('/***', (req, res) => {
+    res.status(404).send({status: false, message: 'No URL found'});
+} )
 
 module.exports = router;

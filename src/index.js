@@ -1,11 +1,13 @@
 const express = require('express');
-const boydParser = require('body-parser');
-const {default:mongoose} = require('mongoose');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+const multer = require('multer');
+// const { AppCongif } = require('aws-sdk');
 const route  = require("./routes/route");
 const app = express();
 
 app.use(bodyParser.json());
+app.use(multer().any());
 
 const url = "mongodb+srv://Mahesh8985:lz9fOW52615YVat4@cluster0.l5fafvk.mongodb.net/Project-3_Book_Managament";
 

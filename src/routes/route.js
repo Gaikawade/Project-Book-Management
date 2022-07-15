@@ -4,7 +4,7 @@ const {authenticate} = require("../middleware/auth");
 const {createUser, loginUser} = require("../controllers/userController");
 const {createBook, getBooks, getBookById, updateBook, deleteById} = require("../controllers/bookController");
 const {createReview, updateReview, deleteReview} = require("../controllers/reviewController");
-const {createAws} = require('../controllers/awsController');
+// const {createAws} = require('../controllers/awsController');
 
 
 //User APIs
@@ -24,7 +24,7 @@ router.put('/books/:bookId/review/:reviewId', updateReview);    //updateReview
 router.delete('/books/:bookId/review/:reviewId', deleteReview); //deleteReview
 
 //AWS File Upload
-router.post('/write-file-aws', createAws)
+// router.post('/write-file-aws', createAws)
 
 //For wrong URL's
 router.all('/***', (req, res) => {

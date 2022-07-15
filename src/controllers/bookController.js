@@ -1,9 +1,9 @@
-// const moment = require("moment");
 const { isValidObjectId } = require("mongoose");
 const bookModel = require("../models/bookModel");
 const userModel = require("../models/userModel");
 const reviewModel = require("../models/reviewModel");
 const { isValidBody, isbnRegex, isValidFormat, isValidName, isValidDate } = require("../validator/validate");
+const {uploadFile} = require('../middleware/aws')
 
 const createBook = async function (req, res) {
     try {
@@ -17,7 +17,6 @@ const createBook = async function (req, res) {
         if (!userId)        return res.status(400).send({ status: false, message: "please enter userId" });
         if (!ISBN)          return res.status(400).send({ status: false, message: "please enter ISBIN" });
         if (!category)      return res.status(400).send({ status: false, message: "please enter Book category" });
-        if (!subcategory)   return res.status(400).send({ status: false, message: "please enter subcategory" });
 
         if(userId !== req.userId) return res.status(403).send({status: false, message: 'Unauthorized access'});
 
@@ -46,10 +45,17 @@ const createBook = async function (req, res) {
         if(!getUserId)  return res.status(400).send({status: false, message: "No user exists with the id"});
 
         let getTitle = await bookModel.findOne({title});
-        if(getTitle)   return res.status(400).send({status: false, message: "Title is already exists in our data"})
+        if(getTitle)   return res.status(400).send({status: false, message: "Title is already exists in our data"});
         
         let getISBN = await bookModel.findOne({ISBN});
-        if(getISBN)   return res.status(400).send({status: false, message: "ISBN is already exists in our data"})
+        if(getISBN)   return res.status(400).send({status: false, message: "ISBN is already exists in our data"});
+
+        let files = req.files;
+        if(files && files.length > 0) {
+            var uploadedFileURL = await uploadFile(files[0]);
+        }
+        let bookCover = uploadedFileURL;
+        data['bookCover'] = bookCover;
 
         let savedData = await bookModel.create(data);
         return res.status(201).send({ status: true, message: "success", data: savedData });

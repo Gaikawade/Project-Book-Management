@@ -1,5 +1,4 @@
 const aws = require('aws-sdk');
-// const { create } = require('../models/bookModel');
 
 aws.config.update(
     {
@@ -22,26 +21,24 @@ let uploadFile = async (file) => {
             if (err) {
                 return reject({'error': err});
             }
-            console.log(data);
-            console.log('File uploaded successfully');
             return resolve(data.Location);
         })
     })
 }
 
-const createAws = async function (req,res){
-    try{
-        let files = req.files;
-        if(files && files.length > 0){
-            let uploadedFileURL = await uploadFile(files[0]);
-            res.status(201).send({message: 'File uploaded successfully', data: uploadedFileURL});
-        }else{
-            res.status(400).send({message: 'File not found'});
-        }
-    }
-    catch(err){
-        res.status(500).send({status: false, message: err.message });
-    }
-}
+// const createAws = async function (req,res){
+//     try{
+//         let files = req.files;
+//         if(files && files.length > 0){
+//             let uploadedFileURL = await uploadFile(files[0]);
+//             res.status(201).send({message: 'File uploaded successfully', data: uploadedFileURL});
+//         }else{
+//             res.status(400).send({message: 'File not found'});
+//         }
+//     }
+//     catch(err){
+//         res.status(500).send({status: false, message: err.message });
+//     }
+// }
 
-module.exports = {createAws};
+module.exports = {uploadFile};

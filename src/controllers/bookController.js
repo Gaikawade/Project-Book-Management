@@ -168,7 +168,7 @@ const updateBook = async (req, res) => {
             {$set: {...fieldsToUpdate}},
             {new: true}
         );
-        res.status(200).send({status: true, message: 'Success', data: updateBook});
+        res.status(201).send({status: true, message: 'Success', data: updateBook});
     }
     catch(err){
         res.status(500).send({ status: false, message: err.message });
@@ -193,7 +193,7 @@ const deleteById = async function (req,res){
                 {$set: {isDeleted: true, deletedAt: new Date()}},
                 {new: true}
             );
-            res.status(200).send({status: true,msg: "Book is Deleted"});
+            res.status(201).send({status: true,msg: "Book is Deleted"});
     }
     catch(err){
         return res.status(500).send({status:false,msg:err.message})

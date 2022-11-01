@@ -29,7 +29,7 @@ const createReview = async (req, res) => {
             if(!isValidName(reviewedBy)) return res.status(400).send({status: false, message: "Invalid Reviewer name"});
         }
         if(reviewedAt){
-            if(!isValidDate(reviewedAt)) return res.status(200).send({status: false, message: "Enter date in YYYY-MM-DD format"});
+            if(!isValidDate(reviewedAt)) return res.status(400).send({status: false, message: "Enter date in YYYY-MM-DD format"});
         }
         if(data.review){
             if(!isValidFormat(data.review)) return res.status(400).send({status: false, message: "Invalid review format"});
@@ -72,7 +72,7 @@ const updateReview = async (req, res) => {
         let update = await reviewModel.findOneAndUpdate({_id: review},{$set: data},{new: true});
         let result = book.toObject();
         result.reviewsData = update;
-        res.status(200).send({status: true, message: "Review Update Successfully", date: result});
+        res.status(201).send({status: true, message: "Review Update Successfully", date: result});
 
     }catch(err){
         res.status(500).send({ status: false, message: err.message });

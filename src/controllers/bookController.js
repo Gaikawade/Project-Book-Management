@@ -27,7 +27,7 @@ const createBook = async function (req, res) {
         if (!isValidName(category))    return res.status(401).send({status: false, message: "Please enter category in proper format" });
         if(subcategory){
             if (!Array.isArray(subcategory)) return res.status(401).send({ status: false, message: "Subcategory must be an array of String" })
-            console.log(subcategory.length)
+            // console.log(subcategory.length)
             for(let i in subcategory){
                 if(!isValidFormat(subcategory[i])) return res.status(401).send({status: false, message: "invalid format of subcategory"});
             }

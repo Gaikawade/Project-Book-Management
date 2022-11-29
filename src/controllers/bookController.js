@@ -18,7 +18,7 @@ const createBook = async function (req, res) {
         if (!ISBN)          return res.status(401).send({ status: false, message: "please enter ISBIN" });
         if (!category)      return res.status(401).send({ status: false, message: "please enter Book category" });
 
-        if(userId !== req.userId) return res.status(403).send({status: false, message: 'Unauthorized access'});
+        if(userId !== req.userId) return res.status(401).send({status: false, message: 'Unauthorized access'});
 
         if (!isValidFormat(title))     return res.status(401).send({status: false, message: "Please enter title in proper format" });
         if (!isValidFormat(excerpt))   return res.status(401).send({status: false, message: "Please enter excerpt in proper format" });
